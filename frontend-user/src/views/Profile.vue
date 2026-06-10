@@ -94,19 +94,20 @@
 import { computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
+import { useFavoritesStore } from '../stores/favorites'
 import { useToastStore } from '../stores/toast'
 import logger from '../utils/logger'
 
 const router = useRouter()
 const userStore = useUserStore()
+const favStore = useFavoritesStore()
 const toast = useToastStore()
 
 const user = computed(() => userStore.user)
 
 const createdPlaylists = [
-  { id: 1, name: '我喜欢的音乐', songCount: 168, cover: 'https://picsum.photos/seed/mylist1/100/100' },
-  { id: 2, name: '深夜独处时光', songCount: 45, cover: 'https://picsum.photos/seed/mylist2/100/100' },
-  { id: 3, name: '运动健身', songCount: 32, cover: 'https://picsum.photos/seed/mylist3/100/100' }
+  { id: 1, name: '深夜独处时光', songCount: 45, cover: 'https://picsum.photos/seed/mylist2/100/100' },
+  { id: 2, name: '运动健身', songCount: 32, cover: 'https://picsum.photos/seed/mylist3/100/100' }
 ]
 
 const HeartIcon = {
@@ -145,19 +146,23 @@ const RadioIcon = {
   }
 }
 
-const myMusic = [
-  { label: '我喜欢的音乐', icon: HeartIcon, count: 168 },
-  { label: '本地下载', icon: DownloadIcon, count: 52 },
-  { label: '最近播放', icon: ClockIcon, count: 300 },
-  { label: '我的电台', icon: RadioIcon, count: 8 }
-]
+const myMusic = computed(() => [
+  { label: '我喜欢的音乐', icon: HeartIcon, count: favStore.count, action: 'favorites' },
+  { label: '本地下载', icon: DownloadIcon, count: 52, action: 'download' },
+  { label: '最近播放', icon: ClockIcon, count: 300, action: 'recent' },
+  { label: '我的电台', icon: RadioIcon, count: 8, action: 'radio' }
+])
 
 function handleStatClick(type, value) {
   toast.info(`${type}: ${value}`)
 }
 
 function handleMusicClick(item) {
-  toast.info(`${item.label}: ${item.count}首`)
+  if (item.action === 'favorites') {
+    router.push('/favorites')
+  } else {
+    toast.info(`${item.label}: ${item.count}首`)
+  }
 }
 
 function handlePlaylistClick(playlist) {
