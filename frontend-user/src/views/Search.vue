@@ -103,6 +103,11 @@
               <span>{{ song.album }}</span>
             </p>
           </div>
+          <button class="result-fav" @click.stop="handleToggleFavorite(song)">
+            <svg viewBox="0 0 24 24" :fill="favoritesStore.isFavorite(song.id) ? '#ec4141' : 'none'" :stroke="favoritesStore.isFavorite(song.id) ? '#ec4141' : '#ccc'" stroke-width="2">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
           <button class="result-play" @click.stop="handlePlaySong(song)">
             <svg viewBox="0 0 24 24" fill="currentColor">
               <polygon points="5 3 19 12 5 21 5 3"/>
@@ -128,10 +133,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useToastStore } from '../stores/toast'
+import { useFavoritesStore } from '../stores/favorites'
 import config from '../config'
 import logger from '../utils/logger'
 
 const toast = useToastStore()
+const favoritesStore = useFavoritesStore()
 const searchQuery = ref('')
 const showHistory = ref(false)
 const loading = ref(false)
@@ -280,6 +287,11 @@ function clearHistory() {
 
 function handlePlaySong(song) {
   toast.info(`播放: ${song.name}`)
+}
+
+function handleToggleFavorite(song) {
+  favoritesStore.toggleFavorite(song)
+  toast.success(favoritesStore.isFavorite(song.id) ? '已收藏' : '已取消收藏')
 }
 
 function highlightKeyword(text) {
@@ -583,6 +595,30 @@ function highlightKeyword(text) {
 
 .separator {
   margin: 0 4px;
+}
+
+.result-fav {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.result-fav:active {
+  transform: scale(0.9);
+}
+
+.result-fav svg {
+  width: 18px;
+  height: 18px;
+  transition: fill 0.2s, stroke 0.2s;
 }
 
 .result-play {
