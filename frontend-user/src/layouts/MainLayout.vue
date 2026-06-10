@@ -37,7 +37,8 @@ const pageTitle = computed(() => {
   const titles = {
     '/': '发现音乐',
     '/search': '搜索',
-    '/profile': '我的'
+    '/profile': '我的',
+    '/favorites': '我喜欢的音乐'
   }
   return titles[route.path] || '网易云音乐'
 })
