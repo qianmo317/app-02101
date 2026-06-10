@@ -95,11 +95,13 @@ import { computed, h } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '../stores/user'
 import { useToastStore } from '../stores/toast'
+import { useFavoritesStore } from '../stores/favorites'
 import logger from '../utils/logger'
 
 const router = useRouter()
 const userStore = useUserStore()
 const toast = useToastStore()
+const favoritesStore = useFavoritesStore()
 
 const user = computed(() => userStore.user)
 
@@ -145,19 +147,23 @@ const RadioIcon = {
   }
 }
 
-const myMusic = [
-  { label: '我喜欢的音乐', icon: HeartIcon, count: 168 },
+const myMusic = computed(() => [
+  { label: '我喜欢的音乐', icon: HeartIcon, count: favoritesStore.count, route: '/favorites' },
   { label: '本地下载', icon: DownloadIcon, count: 52 },
   { label: '最近播放', icon: ClockIcon, count: 300 },
   { label: '我的电台', icon: RadioIcon, count: 8 }
-]
+])
 
 function handleStatClick(type, value) {
   toast.info(`${type}: ${value}`)
 }
 
 function handleMusicClick(item) {
-  toast.info(`${item.label}: ${item.count}首`)
+  if (item.route) {
+    router.push(item.route)
+  } else {
+    toast.info(`${item.label}: ${item.count}首`)
+  }
 }
 
 function handlePlaylistClick(playlist) {
